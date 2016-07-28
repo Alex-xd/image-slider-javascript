@@ -1,6 +1,6 @@
 /*
-*     Created by Boyuan on 2016.7.28
-*/
+ *     Created by Boyuan on 2016.7.28
+ */
 
 window.onload = (function () {
     var banner_container = document.getElementsByClassName('banners-container')[0];
@@ -17,7 +17,11 @@ function slideImg(container, next, prev, small_dots) {
     var moving = false;
     var timer = null;
 
-    next.onclick = function () {
+    next.onclick = rightClick;
+    prev.onclick = leftClick;
+
+    //模拟左右点击动作
+    function rightClick() {
         if (!moving) {
             if (container.offsetLeft <= -3540)  //模拟无限滚动
             {
@@ -25,34 +29,35 @@ function slideImg(container, next, prev, small_dots) {
             }
             startMove(container.offsetLeft - img_width);
         }
-    };
-    prev.onclick = function () {
+    }
+    function leftClick() {
         if (!moving)
             if (container.offsetLeft >= -1180) {
                 container.style.left = -4720 + "px";
             }
         startMove(container.offsetLeft + img_width);
-    };
-    
-    //移动原点
+    }
+
+    //绑定点击小圆点切换事件
     for (var i = 0; i < small_dots.length; i++) {
         small_dots[i].onclick = function (temp) {
             return function () {
                 if (!moving)
-                    startMove((temp+1)*-1180);
+                    startMove((temp + 1) * -1180);
             }
         }(i)
     }
 
+    //移动到指定位置
     function startMove(target) {
         var speed = 0;
 
-        showDot((target / -1180) - 1);        //  -1180 -2360 -3540
+        switchDot((target / -1180) - 1);        //  -1180 -2360 -3540
 
         clearInterval(timer); //解决重复点击的定时器叠加bug
 
         timer = setInterval(function () {
-            speed = (target - container.offsetLeft) / 2;
+            speed = (target - container.offsetLeft) / 10; //速度
 
             speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);
 
@@ -67,17 +72,31 @@ function slideImg(container, next, prev, small_dots) {
         }, 30);
     }
 
-
-    //点亮，熄灭小圆点
-    function showDot(dot_index) {
-        //熄灭过去圆点
+    //切换到指定的小圆点
+    function switchDot(dot_index) {
         for (var i = 0; i < small_dots.length; i++) {
             if (small_dots[i].className == 'on') {
                 small_dots[i].className = '';
                 break;
             }
         }
-        //点亮当前小圆点
         small_dots[dot_index].className = 'on';
     }
+
+    var clearAutoPlay = null;
+    //自动播放
+    function autoPlay() {
+        clearAutoPlay = setInterval(function () {
+            rightClick();
+        }, 1500);
+    }
+
+    container.onmouseover = function () {
+        clearInterval(clearAutoPlay);
+    };
+    container.onmouseout=function () {
+        autoPlay();
+    };
+
+    autoPlay();
 }
