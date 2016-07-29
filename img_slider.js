@@ -31,11 +31,12 @@ function slideImg(container, next, prev, small_dots) {
         }
     }
     function leftClick() {
-        if (!moving)
-            if (container.offsetLeft >= -1180) {
-                container.style.left = -4720 + "px";
+        if (!moving){
+         if (container.offsetLeft >= -1180) {
+              container.style.left = -4720 + "px";
             }
         startMove(container.offsetLeft + img_width);
+        }
     }
 
     //绑定点击小圆点切换事件
